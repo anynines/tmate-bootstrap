@@ -10,13 +10,16 @@ if [[ "${appname}X" == "X" ]]; then
 fi
 shift
 
-while getopts "b:p:" opt; do
+while getopts "b:p:m:" opt; do
   case $opt in
     b)
       buildpack=$OPTARG
       ;;
     p)
       app_path=$OPTARG
+      ;;
+    m)
+      memory=$OPTARG
       ;;
     *)
       echo "unrecognized option: $opt"
@@ -48,6 +51,10 @@ DELIM
 
   if [[ "${app_path}X" != "X" ]]; then
     echo "  path: ${app_path}" >> ${manifest}
+  fi
+
+  if [[ "${memory}X" != "X" ]]; then
+    echo "  memory: ${memory}" >> ${manifest}
   fi
 
   services_bound_to_app=$(CF_COLOR=false cf s | grep " $appname " | awk '{ print $1 }')
@@ -105,3 +112,4 @@ if [[ "${CF_SSH_CLEANUP}" == "delete" ]]; then
 else
   cf stop $ssh_appname
 fi
+
