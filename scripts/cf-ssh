@@ -50,7 +50,7 @@ DELIM
     echo "  path: ${app_path}" >> ${manifest}
   fi
 
-  services_bound_to_app=$(cf s | grep " $appname " | awk '{ print $1 }')
+  services_bound_to_app=$(CF_COLOR=false cf s | grep " $appname " | awk '{ print $1 }')
   if [[ "${services_bound_to_app}X" != "X" ]]; then
     echo "  services:" >> ${manifest}
     for service in ${services_bound_to_app[@]}; do
@@ -80,7 +80,7 @@ else
 fi
 
 sleep 1 # ensure tmate connection setup
-ssh_host=$(cf logs $ssh_appname --recent | grep tmate.io | tail -n1 | awk '{print $NF }')
+ssh_host=$(CF_COLOR=false cf logs $ssh_appname --recent | grep tmate.io | tail -n1 | awk '{print $NF }')
 
 if [[ "${ssh_host}X" != "X" ]]; then
   echo "Running: ssh $ssh_host"
