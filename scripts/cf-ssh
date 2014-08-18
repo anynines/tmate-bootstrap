@@ -79,8 +79,19 @@ else
   cf push ${ssh_appname} -f ${manifest}
 fi
 
-sleep 1 # ensure tmate connection setup
+sleep 2 # ensure tmate connection setup
 ssh_host=$(CF_COLOR=false cf logs $ssh_appname --recent | grep tmate.io | tail -n1 | awk '{print $NF }')
+ssh_host_fetch_attempt=1
+
+#
+while [ "${ssh_host}X" == "X" -a $ssh_host_fetch_attempt -le 60 ]
+do
+  sleep 2 # ensure tmate connection setup
+  ssh_host=$(CF_COLOR=false cf logs $ssh_appname --recent | grep tmate.io | tail -n1 | awk '{print $NF }')
+  ssh_host_fetch_attempt=$(( $ssh_host_fetch_attempt + 1 ))
+  echo "waiting for ssh container ..."
+done
+
 
 if [[ "${ssh_host}X" != "X" ]]; then
   echo "Running: ssh $ssh_host"
